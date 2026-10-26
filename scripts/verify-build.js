@@ -116,5 +116,12 @@ assertCheck(renderGardenBackdropSvg().includes('<svg'), 'Garden backdrop rendere
 if (failed) {
   process.exit(1);
 } else {
+  // Populate `public/` output directory for static hosting platforms (e.g. Vercel)
+  const publicDir = path.join(rootDir, 'public');
+  fs.rmSync(publicDir, { recursive: true, force: true });
+  fs.mkdirSync(publicDir, { recursive: true });
+  fs.copyFileSync(path.join(rootDir, 'index.html'), path.join(publicDir, 'index.html'));
+  fs.cpSync(path.join(rootDir, 'src'), path.join(publicDir, 'src'), { recursive: true });
+  console.log('✅ Generated static deployment output in public/');
   console.log('=== All build and lint checks passed! ===');
 }
