@@ -1,0 +1,928 @@
+/* ==========================================================================
+   Spelling Bee Hive — Studio-Grade Illustrated UI Stylesheet
+   Matches Reference Artwork (`welcome-scene.png` & `gameplay-garden-bg.jpg`)
+   ========================================================================== */
+
+:root {
+  --wood-light: #a65e26;
+  --wood-mid: #7d4011;
+  --wood-dark: #4f2405;
+  --wood-rim: #331502;
+  --honey-top: #fff176;
+  --honey-mid: #ffc11e;
+  --honey-bot: #e08600;
+  --honey-rim: #8c4d00;
+  --parchment-light: #fffdf5;
+  --parchment-warm: #fff5d1;
+  --text-brown: #381802;
+  --text-cream: #fff9e6;
+  --font-display: 'Fredoka', 'Nunito', 'Segoe UI Rounded', 'Trebuchet MS', sans-serif;
+  --font-body: 'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  font-family: var(--font-display);
+  color: var(--text-brown);
+  background-color: #2c7be5;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+button:focus-visible {
+  outline: 4px solid #fff380;
+  outline-offset: 3px;
+}
+
+.sbh-app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   1. WELCOME SCREEN — Exact Studio Artwork Stage + Interactive Hotspots
+   ========================================================================== */
+
+.welcome-viewport {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url('../assets/gameplay-garden-bg.jpg') center center / cover no-repeat;
+  overflow: hidden;
+}
+
+.welcome-viewport::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(10px) brightness(0.92);
+  pointer-events: none;
+}
+
+/* 16:9 Stage matching exact 1310x730 reference scene */
+.welcome-stage {
+  position: relative;
+  z-index: 5;
+  width: min(100vw, calc(100vh * (1310 / 730)));
+  height: min(100vh, calc(100vw * (730 / 1310)));
+  aspect-ratio: 1310 / 730;
+  background: url('../assets/welcome-scene.png') center center / 100% 100% no-repeat;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Interactive Hotspot Overlay Buttons on the Studio Welcome Artwork */
+.welcome-hotspot {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.2), box-shadow 0.16s ease, filter 0.16s ease;
+  background: transparent;
+}
+
+.welcome-hotspot:hover {
+  transform: translateY(-2px) scale(1.025);
+  box-shadow: 0 0 22px rgba(255, 238, 117, 0.75), inset 0 0 14px rgba(255, 255, 255, 0.45);
+}
+
+.welcome-hotspot:active {
+  transform: translateY(2px) scale(0.985);
+}
+
+/* Top-Right Sound & Settings Buttons */
+.hotspot-mute {
+  left: 87.1%;
+  top: 2.3%;
+  width: 5.2%;
+  height: 9.3%;
+  border-radius: 50%;
+}
+
+.hotspot-mute.is-muted::after {
+  content: 'MUTE';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #b85c1e, #6e3209);
+  border: 3px solid #f7d58b;
+  border-radius: 50%;
+  color: #fff8e7;
+  font-weight: 900;
+  font-size: clamp(0.6rem, 1vw, 0.8rem);
+}
+
+.hotspot-settings {
+  left: 93.3%;
+  top: 2.3%;
+  width: 5.2%;
+  height: 9.3%;
+  border-radius: 50%;
+}
+
+/* Center Big Golden Play Button */
+.hotspot-play {
+  left: 35.4%;
+  top: 48.6%;
+  width: 29.6%;
+  height: 16.2%;
+  border-radius: 999px;
+}
+
+.hotspot-play:hover {
+  box-shadow: 0 0 32px rgba(255, 215, 40, 0.95), inset 0 0 18px rgba(255, 255, 255, 0.55);
+}
+
+/* Difficulty Cards (Easy, Medium, Hard) */
+.hotspot-diff {
+  top: 66.8%;
+  height: 16.6%;
+  border-radius: 22px;
+}
+
+.hotspot-diff-easy {
+  left: 26.5%;
+  width: 15.8%;
+}
+
+.hotspot-diff-medium {
+  left: 42.6%;
+  width: 15.6%;
+}
+
+.hotspot-diff-hard {
+  left: 58.4%;
+  width: 15.8%;
+}
+
+.hotspot-diff.selected {
+  box-shadow:
+    0 0 0 4px #fff6a8,
+    0 0 26px rgba(255, 217, 45, 0.95),
+    inset 0 0 14px rgba(255, 255, 255, 0.45);
+  transform: translateY(-3px) scale(1.02);
+}
+
+.selected-diff-pill {
+  position: absolute;
+  top: -13px;
+  background: linear-gradient(180deg, #fff380 0%, #ffae00 100%);
+  color: #3d1b02;
+  border: 2.5px solid #4a2104;
+  border-radius: 999px;
+  padding: 2px 12px;
+  font-size: clamp(0.62rem, 1.05vw, 0.84rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Bottom How to Play Wooden Plaque Button */
+.hotspot-how-to-play {
+  left: 41.2%;
+  top: 85.3%;
+  width: 18.4%;
+  height: 8.8%;
+  border-radius: 999px;
+}
+
+/* Floating Level Guide Button on Bottom-Right of Welcome Stage */
+.hotspot-level-guide {
+  position: absolute;
+  right: 2.2%;
+  bottom: 2.8%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(180deg, #9c5720 0%, #6e380d 55%, #4d2405 100%);
+  color: #fff6db;
+  border: 3px solid #331502;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: clamp(0.78rem, 1.2vw, 0.98rem);
+  font-weight: 800;
+  box-shadow: 0 4px 0 #291001, 0 6px 14px rgba(0, 0, 0, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.14s ease;
+}
+
+.hotspot-level-guide:hover {
+  transform: translateY(-2px);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================================================================
+   2. GAMEPLAY SCREEN — Lush Illustrated Garden + Carved Wood & Honeycomb HUD
+   ========================================================================== */
+
+.gameplay-viewport {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: url('../assets/gameplay-garden-bg.jpg') center center / cover no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 18px 12px;
+  overflow: hidden;
+}
+
+/* Top Carved Wood & Honeycomb HUD */
+.gameplay-hud {
+  position: relative;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  background: linear-gradient(180deg, rgba(130, 69, 21, 0.94) 0%, rgba(84, 41, 8, 0.96) 100%);
+  border: 4px solid #361702;
+  border-radius: 26px;
+  padding: 10px 18px;
+  box-shadow:
+    0 7px 0 #260f01,
+    0 12px 28px rgba(0, 0, 0, 0.38),
+    inset 0 3px 0 rgba(255, 224, 150, 0.35);
+}
+
+.hud-session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.session-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(180deg, #4a2104 0%, #301401 100%);
+  border: 2px solid #b57331;
+  color: #ffe8a3;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.45);
+}
+
+.honey-score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(180deg, #fff176 0%, #ffb71b 100%);
+  border: 3px solid #4a2104;
+  color: #3d1b02;
+  font-weight: 900;
+  font-size: 0.98rem;
+  padding: 5px 14px;
+  border-radius: 999px;
+  box-shadow: 0 3px 0 #2e1301, inset 0 2px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* Center Word Slots & Sentence Ribbon */
+.hud-word-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.word-sentence-clue {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #3b1902;
+  text-align: center;
+  background: linear-gradient(180deg, #fffdf2 0%, #ffecb3 100%);
+  padding: 5px 18px;
+  border-radius: 999px;
+  border: 2.5px solid #592a07;
+  box-shadow: 0 3px 0 rgba(43, 18, 2, 0.5);
+  max-width: 650px;
+}
+
+.word-slots-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.word-slot {
+  position: relative;
+  width: 54px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.95rem;
+  font-weight: 900;
+  background: linear-gradient(180deg, #421e04 0%, #2b1201 100%);
+  border: 3px solid #b87632;
+  color: #fff5d6;
+  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.55), 0 2px 0 rgba(255, 224, 150, 0.25);
+  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.3), background 0.2s ease;
+}
+
+.word-slot.slot-collected {
+  background: linear-gradient(180deg, #fff176 0%, #ffc11e 58%, #e08600 100%);
+  border: 3px solid #fff6b3;
+  color: #3d1b02;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 0 #3d1b02, 0 0 14px rgba(255, 209, 42, 0.65), inset 0 3px 0 rgba(255, 255, 255, 0.75);
+  transform: scale(1.06);
+}
+
+.word-slot.slot-next {
+  background: linear-gradient(180deg, #fff9db 0%, #ffe082 100%);
+  border: 3.5px solid #ff9100;
+  color: #4a2104;
+  box-shadow: 0 0 0 4px rgba(255, 213, 79, 0.55), 0 4px 0 #3d1b02;
+}
+
+.slot-watermark {
+  color: rgba(110, 56, 10, 0.32);
+  font-weight: 900;
+  pointer-events: none;
+}
+
+.slot-index-badge {
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  opacity: 0.65;
+}
+
+/* HUD Action Controls */
+.hud-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.hud-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 0.96rem;
+  border: 3px solid #361702;
+  box-shadow: 0 4px 0 #260f01, inset 0 2px 0 rgba(255, 255, 255, 0.55);
+  transition: transform 0.12s ease;
+}
+
+.hud-btn:hover {
+  transform: translateY(-2px);
+}
+
+.hud-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #260f01;
+}
+
+.hud-btn-audio {
+  background: linear-gradient(180deg, #fff176 0%, #ffba19 60%, #e08600 100%);
+  color: #3d1b02;
+}
+
+.hud-btn-hint {
+  background: linear-gradient(180deg, #69f0ae 0%, #2bbd50 60%, #198c36 100%);
+  color: #fff;
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.35);
+}
+
+.hud-btn-pause {
+  background: linear-gradient(180deg, #b56c2d 0%, #7d4011 100%);
+  color: #fff8e7;
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* Contextual Feedback Pill Banner */
+.feedback-banner {
+  position: relative;
+  z-index: 18;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 7px 22px;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 0.98rem;
+  border: 3px solid #4a2104;
+  background: linear-gradient(180deg, #fffdf5 0%, #ffefc2 100%);
+  color: #381802;
+  box-shadow: 0 5px 0 rgba(43, 18, 2, 0.55), 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.feedback-banner.feedback-correct {
+  background: linear-gradient(180deg, #e8fdf0 0%, #b9f6ca 100%);
+  border-color: #166e2c;
+  color: #0b4519;
+}
+
+.feedback-banner.feedback-later_letter {
+  background: linear-gradient(180deg, #fff8e1 0%, #ffe082 100%);
+  border-color: #995700;
+  color: #4d2b00;
+}
+
+.feedback-banner.feedback-wrong_letter {
+  background: linear-gradient(180deg, #ffefe5 0%, #ffccbc 100%);
+  border-color: #9e3106;
+  color: #521600;
+}
+
+.feedback-banner.feedback-hint {
+  background: linear-gradient(180deg, #f3e5f5 0%, #e1bee7 100%);
+  border-color: #5e1eb8;
+  color: #33096e;
+}
+
+.feedback-banner.feedback-wasp {
+  background: linear-gradient(180deg, #ffebee 0%, #ffcdd2 100%);
+  border-color: #a31515;
+  color: #590707;
+}
+
+/* ==========================================================================
+   Active Playfield Area (Falling Sculpted Honeycomb Tiles + High-Res Bee)
+   ========================================================================== */
+
+.playfield-container {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* 3D Sculpted Golden Honeycomb Letter Tile */
+.falling-tile {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 78px;
+  height: 84px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 12;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.32));
+}
+
+.tile-hex-body {
+  position: relative;
+  width: 72px;
+  height: 76px;
+  background: linear-gradient(180deg, #fff58c 0%, #ffc926 52%, #e08200 100%);
+  border: 4px solid #592904;
+  border-radius: 22px;
+  box-shadow:
+    0 6px 0 #381701,
+    inset 0 4px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -4px 0 rgba(166, 86, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.25rem;
+  font-weight: 900;
+  color: #3b1802;
+  text-shadow: 0 2px 0 rgba(255, 245, 190, 0.85);
+}
+
+/* Glossy Top Specular Shine on Honeycomb Tile */
+.tile-hex-body::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 10px;
+  right: 10px;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.05));
+  pointer-events: none;
+}
+
+/* Wasp Obstacle Medallion */
+.falling-tile.tile-wasp .tile-hex-body {
+  background: repeating-linear-gradient(
+    -45deg,
+    #ffcf24,
+    #ffcf24 11px,
+    #2b1a0e 11px,
+    #2b1a0e 22px
+  );
+  border-color: #1f1208;
+  border-radius: 50%;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.wasp-badge {
+  background: linear-gradient(180deg, #e53935, #9e1111);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  margin-top: -8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* High-Resolution Illustrated Player Bee Character */
+.player-bee {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 118px;
+  height: 118px;
+  z-index: 15;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.35));
+}
+
+.bee-sprite-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: beeFlightBob 2.2s ease-in-out infinite;
+}
+
+.player-bee.facing-left .bee-sprite-wrapper {
+  transform: scaleX(-1);
+}
+
+.bee-character-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.player-bee.bee-stunned {
+  filter: saturate(0.75) drop-shadow(0 0 12px #ff5252);
+}
+
+/* Bottom Flight Control Bar */
+.touch-controls-bar {
+  position: relative;
+  z-index: 20;
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 4px 6px;
+}
+
+.btn-move-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 155px;
+  padding: 11px 24px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fff176 0%, #ffc11e 55%, #e08600 100%);
+  border: 3.5px solid #4a2104;
+  box-shadow: 0 5px 0 #2e1301, 0 8px 16px rgba(0, 0, 0, 0.35), inset 0 3px 0 rgba(255, 255, 255, 0.7);
+  font-size: 1.08rem;
+  font-weight: 900;
+  color: #3d1b02;
+}
+
+.btn-move-arrow:hover {
+  transform: translateY(-2px);
+}
+
+.btn-move-arrow:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #2e1301;
+}
+
+.controls-help-hint {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #fff9e6;
+  background: rgba(54, 23, 2, 0.78);
+  border: 2px solid rgba(255, 220, 130, 0.55);
+  padding: 6px 18px;
+  border-radius: 999px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   3. WOOD & HONEYCOMB MODALS (Pause, Word Complete, Session Summary, Guide)
+   ========================================================================== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(24, 10, 1, 0.68);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  overflow-y: auto;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 680px;
+  background: linear-gradient(180deg, #fffdf7 0%, #fff3cc 100%);
+  border: 6px solid #6e370b;
+  border-radius: 32px;
+  box-shadow:
+    0 10px 0 #381802,
+    0 24px 50px rgba(0, 0, 0, 0.55),
+    inset 0 4px 0 rgba(255, 255, 255, 0.85);
+  padding: 26px 30px;
+  color: var(--text-brown);
+  text-align: center;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+.modal-title {
+  font-size: 2.1rem;
+  font-weight: 900;
+  color: #4a2104;
+  text-shadow: 0 2px 0 rgba(255, 230, 140, 0.8);
+  margin-bottom: 8px;
+}
+
+.completed-word-display {
+  display: inline-flex;
+  gap: 9px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.completed-letter-tile {
+  width: 54px;
+  height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fff176 0%, #ffc11e 58%, #e08600 100%);
+  border: 3.5px solid #4a2104;
+  box-shadow: 0 5px 0 #331502, inset 0 3px 0 rgba(255, 255, 255, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.9rem;
+  font-weight: 900;
+  color: #3b1802;
+}
+
+.teaching-note-box {
+  background: rgba(255, 252, 240, 0.92);
+  border: 3px solid #d4962a;
+  border-radius: 20px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  text-align: left;
+  font-family: var(--font-body);
+  box-shadow: inset 0 2px 6px rgba(138, 79, 12, 0.08);
+}
+
+.teaching-note-box h4 {
+  font-size: 0.96rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #7d4011;
+  margin-bottom: 6px;
+}
+
+.teaching-note-box p {
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: #381802;
+  margin-bottom: 6px;
+}
+
+.modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.btn-primary-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 30px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fff176 0%, #ffc11e 55%, #e08600 100%);
+  border: 4px solid #4a2104;
+  box-shadow: 0 5px 0 #2e1301, inset 0 3px 0 rgba(255, 255, 255, 0.75);
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #3b1802;
+  transition: transform 0.14s ease;
+}
+
+.btn-primary-gold:hover {
+  transform: translateY(-2px);
+}
+
+.btn-secondary-cream {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #9c5720 0%, #6e380d 100%);
+  border: 3.5px solid #331502;
+  box-shadow: 0 4px 0 #240e01, inset 0 2px 0 rgba(255, 255, 255, 0.28);
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff8e7;
+  transition: transform 0.14s ease;
+}
+
+.btn-secondary-cream:hover {
+  transform: translateY(-2px);
+}
+
+/* Session Summary Grid */
+.summary-stars-row {
+  font-size: 2.8rem;
+  margin: 4px 0;
+  filter: drop-shadow(0 3px 0 #4a2104);
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin: 14px 0;
+  text-align: left;
+  font-family: var(--font-body);
+}
+
+.summary-panel {
+  background: #fffdf5;
+  border: 3px solid #cfa03c;
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.summary-panel h3 {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #6e370b;
+  margin-bottom: 8px;
+  border-bottom: 2px solid rgba(110, 55, 11, 0.15);
+  padding-bottom: 4px;
+}
+
+.summary-stat-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.94rem;
+  font-weight: 700;
+  padding: 4px 0;
+}
+
+.pattern-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.pattern-chip {
+  background: #ffe082;
+  border: 1.5px solid #a66800;
+  color: #3d1b02;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #fffdf5;
+  border: 2.5px solid #d4962a;
+  border-radius: 16px;
+  margin: 8px 0;
+  text-align: left;
+  font-family: var(--font-body);
+}
+
+@keyframes beeFlightBob {
+  0%, 100% { transform: translateY(0px) rotate(-1deg); }
+  50% { transform: translateY(-7px) rotate(2deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.reduced-motion *,
+.reduced-motion *::before,
+.reduced-motion *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (max-width: 860px) {
+  .gameplay-hud {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .hud-session-info {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .controls-help-hint {
+    display: none;
+  }
+}
