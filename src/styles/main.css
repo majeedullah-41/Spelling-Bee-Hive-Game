@@ -217,7 +217,7 @@ button:focus-visible {
   border-radius: 999px;
 }
 
-/* Floating Level Guide Button on Bottom-Right of Welcome Stage */
+/* Floating Level Guide & Mute Voice Buttons on Bottom-Right of Welcome Stage */
 .hotspot-level-guide {
   position: absolute;
   right: 2.2%;
@@ -237,6 +237,33 @@ button:focus-visible {
 }
 
 .hotspot-level-guide:hover {
+  transform: translateY(-2px);
+}
+
+.hotspot-voice-toggle {
+  position: absolute;
+  right: 15.5%;
+  bottom: 2.8%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(180deg, #fff176 0%, #ffba19 60%, #e08600 100%);
+  color: #3d1b02;
+  border: 3px solid #331502;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: clamp(0.78rem, 1.2vw, 0.98rem);
+  font-weight: 900;
+  box-shadow: 0 4px 0 #291001, 0 6px 14px rgba(0, 0, 0, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.55);
+  transition: transform 0.14s ease;
+}
+
+.hotspot-voice-toggle.is-muted {
+  background: linear-gradient(180deg, #e57373 0%, #c62828 100%);
+  color: #fff;
+}
+
+.hotspot-voice-toggle:hover {
   transform: translateY(-2px);
 }
 
@@ -447,6 +474,17 @@ button:focus-visible {
   background: linear-gradient(180deg, #b56c2d 0%, #7d4011 100%);
   color: #fff8e7;
   text-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+}
+
+.hud-btn-mute {
+  background: linear-gradient(180deg, #ffecb3 0%, #ffb300 100%);
+  color: #3d1b02;
+}
+
+.hud-btn-mute.is-muted {
+  background: linear-gradient(180deg, #ef5350 0%, #b71c1c 100%);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 /* Contextual Feedback Pill Banner */

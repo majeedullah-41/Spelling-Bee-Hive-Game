@@ -1605,6 +1605,7 @@ function getSessionSummaryReport(state) {
 class AudioManager {
   constructor(options = {}) {
     this.muted = Boolean(options.muted);
+    this.voiceMuted = Boolean(options.voiceMuted ?? options.muted);
     this.speechRate = options.speechRate ?? 0.9;
     this.speechPitch = options.speechPitch ?? 1.05;
     this.onSpeechStatusChange = options.onSpeechStatusChange || null;
@@ -1637,6 +1638,7 @@ class AudioManager {
 
   setMuted(muted) {
     this.muted = Boolean(muted);
+    this.voiceMuted = this.muted;
     if (this.muted) {
       this.stopAll();
     }
@@ -1645,6 +1647,18 @@ class AudioManager {
 
   toggleMute() {
     return this.setMuted(!this.muted);
+  }
+
+  setVoiceMuted(voiceMuted) {
+    this.voiceMuted = Boolean(voiceMuted);
+    if (this.voiceMuted) {
+      this.stopAll();
+    }
+    return this.voiceMuted;
+  }
+
+  toggleVoiceMute() {
+    return this.setVoiceMuted(!this.voiceMuted);
   }
 
   /**
@@ -1680,10 +1694,7 @@ class AudioManager {
     if (!text) return false;
     this.stopAll();
 
-    if (this.muted) {
-      this.setSpeakingState(true, text);
-      const timer = setTimeout(() => this.setSpeakingState(false, ''), 1200);
-      this.activeSequenceTimers.push(timer);
+    if (this.muted || this.voiceMuted) {
       return false;
     }
 
@@ -2038,6 +2049,10 @@ class SpellingBeeHiveApp {
       } else if (e.key === 'r' || e.key === 'R') {
         e.preventDefault();
         this.triggerAudioReplay();
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        this.audio.toggleVoiceMute();
+        this.render();
       }
     } else if (this.state.screen === 'paused' && e.key === 'Escape') {
       e.preventDefault();
@@ -2180,6 +2195,17 @@ class SpellingBeeHiveApp {
             <span class="sr-only">How to Play</span>
           </button>
 
+          <!-- Mute Voice Pill Button on Welcome Screen -->
+          <button
+            type="button"
+            class="hotspot-voice-toggle ${this.audio.voiceMuted ? 'is-muted' : ''}"
+            data-action="toggle-voice-mute"
+            data-testid="welcome-mute-voice-button"
+            aria-pressed="${this.audio.voiceMuted}"
+          >
+            <span>${this.audio.voiceMuted ? 'Unmute Voice' : 'Mute Voice'}</span>
+          </button>
+
           <!-- Level Guide & Difficulty Details Pill -->
           <button
             type="button"
@@ -2265,6 +2291,16 @@ class SpellingBeeHiveApp {
               title="Listen to the word and sentence again (Shortcut: R)"
             >
               <span data-speech-indicator>Hear Word</span>
+            </button>
+            <button
+              type="button"
+              class="hud-btn hud-btn-mute ${this.audio.voiceMuted ? 'is-muted' : ''}"
+              data-action="toggle-voice-mute"
+              data-testid="mute-voice-button"
+              aria-pressed="${this.audio.voiceMuted}"
+              title="${this.audio.voiceMuted ? 'Unmute spoken voice (Shortcut: M)' : 'Mute spoken voice (Shortcut: M)'}"
+            >
+              ${this.audio.voiceMuted ? 'Unmute Voice' : 'Mute Voice'}
             </button>
             <button
               type="button"
@@ -2642,11 +2678,21 @@ class SpellingBeeHiveApp {
             <h2 id="settings-title" class="modal-title">Settings & Accessibility</h2>
             <div class="setting-row">
               <div>
-                <strong>Game Audio & Speech</strong>
-                <div style="font-size: 0.85rem;">Spoken words, example sentences, and musical chimes</div>
+                <strong>Spoken Voice Narration</strong>
+                <div style="font-size: 0.85rem;">Mute or unmute the spoken word and sentence voice</div>
+              </div>
+              <button type="button" class="btn-secondary-cream" data-action="toggle-voice-mute">
+                ${this.audio.voiceMuted ? 'Voice Muted (Tap to Unmute)' : 'Mute Voice'}
+              </button>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <strong>All Game Sound Effects</strong>
+                <div style="font-size: 0.85rem;">Musical chimes and button sound effects</div>
               </div>
               <button type="button" class="btn-secondary-cream" data-action="toggle-mute">
-                ${this.audio.muted ? 'Muted (Tap to Unmute)' : 'Sound On'}
+                ${this.audio.muted ? 'All Sound Muted (Tap to Unmute)' : 'Sound On'}
               </button>
             </div>
 
@@ -2719,6 +2765,10 @@ class SpellingBeeHiveApp {
         switch (action) {
           case 'toggle-mute':
             this.audio.toggleMute();
+            this.render();
+            break;
+          case 'toggle-voice-mute':
+            this.audio.toggleVoiceMute();
             this.render();
             break;
           case 'open-settings':

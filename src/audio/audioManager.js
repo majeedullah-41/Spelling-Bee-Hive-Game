@@ -11,6 +11,7 @@
 export class AudioManager {
   constructor(options = {}) {
     this.muted = Boolean(options.muted);
+    this.voiceMuted = Boolean(options.voiceMuted ?? options.muted);
     this.speechRate = options.speechRate ?? 0.9;
     this.speechPitch = options.speechPitch ?? 1.05;
     this.onSpeechStatusChange = options.onSpeechStatusChange || null;
@@ -43,6 +44,7 @@ export class AudioManager {
 
   setMuted(muted) {
     this.muted = Boolean(muted);
+    this.voiceMuted = this.muted;
     if (this.muted) {
       this.stopAll();
     }
@@ -51,6 +53,18 @@ export class AudioManager {
 
   toggleMute() {
     return this.setMuted(!this.muted);
+  }
+
+  setVoiceMuted(voiceMuted) {
+    this.voiceMuted = Boolean(voiceMuted);
+    if (this.voiceMuted) {
+      this.stopAll();
+    }
+    return this.voiceMuted;
+  }
+
+  toggleVoiceMute() {
+    return this.setVoiceMuted(!this.voiceMuted);
   }
 
   /**
@@ -86,10 +100,7 @@ export class AudioManager {
     if (!text) return false;
     this.stopAll();
 
-    if (this.muted) {
-      this.setSpeakingState(true, text);
-      const timer = setTimeout(() => this.setSpeakingState(false, ''), 1200);
-      this.activeSequenceTimers.push(timer);
+    if (this.muted || this.voiceMuted) {
       return false;
     }
 

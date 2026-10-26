@@ -420,7 +420,15 @@ describe('3. Difficulty Rules, Wasps, Hints & Scoring Separation Tests', () => {
     audio.speakWordPromptSequence(wordEntry, ['word', 'sentence', 'word']);
     assert.equal(audio.isSpeaking, true);
 
-    // Calling stopAll or toggling mute cancels active speech timers
+    // Calling toggleVoiceMute cancels active speech and prevents spoken prompts while muted
+    audio.toggleVoiceMute();
+    assert.equal(audio.voiceMuted, true);
+    assert.equal(audio.isSpeaking, false);
+    assert.equal(audio.speakWord(wordEntry), false);
+
+    // Unmuting voice and toggling full mute
+    audio.toggleVoiceMute();
+    assert.equal(audio.voiceMuted, false);
     audio.toggleMute();
     assert.equal(audio.muted, true);
     assert.equal(audio.isSpeaking, false);
