@@ -1824,10 +1824,10 @@ class AudioManager {
 /**
  * Spelling Bee Hive — Interactive Browser UI & Controller
  *
- * Uses the studio-grade illustrated assets (`welcome-scene.png`, `gameplay-garden-bg.jpg`,
- * and transparent-keyed `bee-sprite.png`) combined with the deterministic game engine
- * (`src/engine/gameState.js`), validated word bank (`src/data/words.js`), and
- * reusable audio system (`src/audio/audioManager.js`).
+ * Full-screen responsive, animated DOM interface over the illustrated garden
+ * (`gameplay-garden-bg.jpg`) with real 3D wood & honeycomb components,
+ * floating high-res transparent bee sprite (`bee-sprite.png`), ambient pollen
+ * & cloud animations, and deterministic gameplay engine (`gameState.js`).
  */
 
 
@@ -1870,12 +1870,24 @@ function renderHiveSvg() {
 }
 
 /**
- * Returns the backdrop markup (kept for module API compatibility).
+ * Returns the ambient animated garden effects (sunlight glow, drifting clouds, and floating golden pollen particles).
  */
 function renderGardenBackdropSvg() {
   return `
-    <div class="garden-scene" aria-hidden="true" style="display:none">
-      <svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#76d343"/></svg>
+    <div class="ambient-garden-fx" aria-hidden="true">
+      <div class="sun-glow"></div>
+      <div class="drifting-cloud cloud-1"></div>
+      <div class="drifting-cloud cloud-2"></div>
+      <div class="pollen-particle pollen-1"></div>
+      <div class="pollen-particle pollen-2"></div>
+      <div class="pollen-particle pollen-3"></div>
+      <div class="pollen-particle pollen-4"></div>
+      <div class="pollen-particle pollen-5"></div>
+      <div class="pollen-particle pollen-6"></div>
+      <div class="pollen-particle pollen-7"></div>
+      <div class="pollen-particle pollen-8"></div>
+      <div class="pollen-particle pollen-9"></div>
+      <svg viewBox="0 0 10 10" style="display:none"><rect width="10" height="10" fill="#76d343"/></svg>
     </div>
   `;
 }
@@ -2106,8 +2118,18 @@ class SpellingBeeHiveApp {
     this.render();
   }
 
+  /**
+   * Renders the full-screen animated Welcome Page with real DOM components:
+   * - Swaying Habit Builder School wooden sign + 3D Sound/Settings/Voice controls
+   * - Floating high-res Bee character (`bee-sprite.png`)
+   * - 3D Honeycomb & Carved Wood Title Logo with animated crown
+   * - 3D Glossy Play CTA button with diagonal shine sweep
+   * - 3D Glossy Difficulty Cards (Easy, Medium, Hard)
+   * - Garden motto post & How to Play / Level Guide wooden plaques
+   */
   renderWelcomeScreen() {
     const isMuted = this.audio.muted;
+    const isVoiceMuted = this.audio.voiceMuted;
     const difficulties = [
       DIFFICULTY_CONFIG.easy,
       DIFFICULTY_CONFIG.medium,
@@ -2116,106 +2138,173 @@ class SpellingBeeHiveApp {
 
     return `
       <main class="welcome-viewport" data-testid="welcome-screen">
-        <div class="welcome-stage" role="region" aria-label="Spelling Bee Hive Welcome Menu">
-          <h1 class="sr-only">Spelling Bee Hive — Habit Builder School — Catch, Spell, Grow</h1>
+        ${renderGardenBackdropSvg()}
 
-          <!-- Top-Right Audio Mute/Unmute Button -->
-          <button
-            type="button"
-            class="welcome-hotspot hotspot-mute ${isMuted ? 'is-muted' : ''}"
-            data-action="toggle-mute"
-            aria-label="${isMuted ? 'Unmute game audio' : 'Mute game audio'}"
-            title="${isMuted ? 'Unmute Audio' : 'Mute Audio'}"
-          >
-            <span class="sr-only">${isMuted ? 'Unmute Audio' : 'Mute Audio'}</span>
-          </button>
+        <!-- Top Bar: Hanging School Sign + Audio & Settings Controls -->
+        <header class="welcome-top-bar">
+          <div class="school-hanging-sign" role="banner">
+            <svg class="school-sign-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M6 12C12 12 16 14 18 17C20 14 24 12 30 12V28C24 28 20 29 18 31C16 29 12 28 6 28V12Z" fill="#fff8e7" stroke="#3b1902" stroke-width="2.5"/>
+              <path d="M18 4C18 4 13 8 18 14C23 8 18 4 18 4Z" fill="#69f0ae" stroke="#3b1902" stroke-width="2"/>
+            </svg>
+            <span>Habit Builder School</span>
+          </div>
 
-          <!-- Top-Right Settings Button -->
-          <button
-            type="button"
-            class="welcome-hotspot hotspot-settings"
-            data-action="open-settings"
-            aria-label="Open game settings and accessibility options"
-            title="Settings & Accessibility"
-          >
-            <span class="sr-only">Settings & Accessibility</span>
-          </button>
+          <div class="welcome-top-actions">
+            <button
+              type="button"
+              class="btn-wood-pill ${isVoiceMuted ? 'is-muted' : ''}"
+              data-action="toggle-voice-mute"
+              data-testid="welcome-mute-voice-button"
+              aria-pressed="${isVoiceMuted}"
+              title="${isVoiceMuted ? 'Unmute Spoken Voice' : 'Mute Spoken Voice'}"
+            >
+              <span>${isVoiceMuted ? 'Unmute Voice' : 'Mute Voice'}</span>
+            </button>
 
-          <!-- Center Golden Play Button -->
-          <button
-            type="button"
-            class="welcome-hotspot hotspot-play"
-            data-action="start-selected-difficulty"
-            data-testid="play-button"
-            aria-label="Play Spelling Bee Hive (${DIFFICULTY_CONFIG[this.selectedWelcomeDifficulty].name})"
-            title="Start Game (${DIFFICULTY_CONFIG[this.selectedWelcomeDifficulty].name})"
-          >
-            <span class="sr-only">Play</span>
-          </button>
+            <button
+              type="button"
+              class="btn-wood-circle ${isMuted ? 'is-muted' : ''}"
+              data-action="toggle-mute"
+              aria-label="${isMuted ? 'Unmute all game audio' : 'Mute all game audio'}"
+              title="${isMuted ? 'Unmute All Audio' : 'Mute All Audio'}"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                ${
+                  isMuted
+                    ? '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>'
+                    : '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>'
+                }
+              </svg>
+            </button>
 
-          <!-- Difficulty Selection Cards (Easy, Medium, Hard) -->
-          ${difficulties
-            .map((diff) => {
-              const isSelected = this.selectedWelcomeDifficulty === diff.id;
-              return `
-                <button
-                  type="button"
-                  class="welcome-hotspot hotspot-diff hotspot-diff-${diff.id} ${
-                    isSelected ? 'selected' : ''
-                  }"
-                  data-action="select-difficulty-card"
-                  data-difficulty="${diff.id}"
-                  data-testid="difficulty-card-${diff.id}"
-                  aria-pressed="${isSelected}"
-                  aria-label="${diff.name} — ${diff.title}: ${diff.subtitle}"
-                  title="${diff.name} — ${diff.title} (${
-                    isSelected ? 'Click again or press Play to start!' : 'Click to select'
-                  })"
-                >
-                  ${
-                    isSelected
-                      ? `<span class="selected-diff-pill">Selected: ${diff.name}</span>`
-                      : ''
-                  }
-                  <span class="sr-only">${diff.name} — ${diff.title} — ${diff.subtitle}</span>
-                </button>
-              `;
-            })
-            .join('')}
+            <button
+              type="button"
+              class="btn-wood-circle btn-gear"
+              data-action="open-settings"
+              aria-label="Open game settings and accessibility options"
+              title="Settings & Accessibility"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+              </svg>
+            </button>
+          </div>
+        </header>
 
-          <!-- Bottom How to Play Button -->
-          <button
-            type="button"
-            class="welcome-hotspot hotspot-how-to-play"
-            data-action="open-how-to-play"
-            data-testid="how-to-play-button"
-            aria-label="How to Play"
-            title="How to Play"
-          >
-            <span class="sr-only">How to Play</span>
-          </button>
+        <!-- Center Stage: Animated Hero Bee + 3D Title Logo + Play Button + Difficulty Cards -->
+        <div class="welcome-center-stage">
+          <div class="welcome-bee-showcase" data-welcome-bee>
+            <img src="./src/assets/bee-sprite.png" alt="Friendly Spelling Bee" draggable="false" />
+          </div>
 
-          <!-- Mute Voice Pill Button on Welcome Screen -->
-          <button
-            type="button"
-            class="hotspot-voice-toggle ${this.audio.voiceMuted ? 'is-muted' : ''}"
-            data-action="toggle-voice-mute"
-            data-testid="welcome-mute-voice-button"
-            aria-pressed="${this.audio.voiceMuted}"
-          >
-            <span>${this.audio.voiceMuted ? 'Unmute Voice' : 'Mute Voice'}</span>
-          </button>
+          <!-- 3D Honeycomb & Carved Wood Title Emblem -->
+          <div class="logo-emblem-wrapper">
+            <svg class="logo-crown-svg" viewBox="0 0 80 54" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M8 46L4 16L26 30L40 8L54 30L76 16L72 46H8Z" fill="#ffd52e" stroke="#5c2804" stroke-width="4" stroke-linejoin="round"/>
+              <circle cx="40" cy="6" r="5" fill="#fff380" stroke="#5c2804" stroke-width="2.5"/>
+              <circle cx="5" cy="14" r="4.5" fill="#fff380" stroke="#5c2804" stroke-width="2.5"/>
+              <circle cx="75" cy="14" r="4.5" fill="#fff380" stroke="#5c2804" stroke-width="2.5"/>
+            </svg>
 
-          <!-- Level Guide & Difficulty Details Pill -->
-          <button
-            type="button"
-            class="hotspot-level-guide"
-            data-action="open-difficulty-modal"
-            data-testid="difficulty-details-button"
-          >
-            <span>Level Guide</span>
-          </button>
+            <div class="logo-honeycomb-backing">
+              <svg class="logo-leaf-left" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M40 22C28 6 8 8 4 22C8 36 28 38 40 22Z" fill="#4cd964" stroke="#236e2b" stroke-width="3"/>
+              </svg>
+              <svg class="logo-leaf-right" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M40 22C28 6 8 8 4 22C8 36 28 38 40 22Z" fill="#4cd964" stroke="#236e2b" stroke-width="3"/>
+              </svg>
+
+              <div class="logo-wood-plaque">
+                <h1>
+                  <span class="logo-title-line1">Spelling</span>
+                  <span class="logo-title-line2">Bee Hive</span>
+                </h1>
+              </div>
+            </div>
+
+            <div class="logo-subtitle-ribbon">
+              Catch • Spell • Grow
+            </div>
+          </div>
+
+          <!-- 3D Glossy Play Button -->
+          <div class="play-cta-container">
+            <button
+              type="button"
+              class="btn-play-hero"
+              data-action="start-selected-difficulty"
+              data-testid="play-button"
+              aria-label="Play Spelling Bee Hive (${DIFFICULTY_CONFIG[this.selectedWelcomeDifficulty].name})"
+            >
+              <svg class="play-triangle-svg" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M7 5.5C7 3.8 8.9 2.8 10.3 3.7L26.5 14.2C27.8 15 27.8 17 26.5 17.8L10.3 28.3C8.9 29.2 7 28.2 7 26.5V5.5Z"/>
+              </svg>
+              <span>Play</span>
+            </button>
+          </div>
+
+          <!-- 3D Difficulty Selection Cards Tray -->
+          <section class="difficulty-cards-tray" aria-label="Select Difficulty Level">
+            ${difficulties
+              .map((diff) => {
+                const isSelected = this.selectedWelcomeDifficulty === diff.id;
+                return `
+                  <button
+                    type="button"
+                    class="diff-card-btn diff-card-${diff.id} ${isSelected ? 'selected' : ''}"
+                    data-action="select-difficulty-card"
+                    data-difficulty="${diff.id}"
+                    data-testid="difficulty-card-${diff.id}"
+                    aria-pressed="${isSelected}"
+                  >
+                    ${isSelected ? '<span class="diff-selected-tag">Selected</span>' : ''}
+                    <img
+                      src="./src/assets/bee-sprite.png"
+                      alt=""
+                      class="diff-mini-bee"
+                      draggable="false"
+                    />
+                    <span class="diff-card-name">${diff.name}</span>
+                    <span class="diff-card-subtitle">${diff.title}</span>
+                  </button>
+                `;
+              })
+              .join('')}
+          </section>
         </div>
+
+        <!-- Bottom Bar: Wooden Garden Motto Sign + How to Play & Level Guide -->
+        <footer class="welcome-bottom-bar">
+          <div class="garden-motto-post">
+            Small steps<br />build big skills!
+          </div>
+
+          <div class="welcome-footer-center">
+            <button
+              type="button"
+              class="btn-wood-plaque"
+              data-action="open-how-to-play"
+              data-testid="how-to-play-button"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M2 6s3.5-2 10-2 10 2 10 2v14s-3.5-2-10-2-10 2-10 2V6zm10-2v14"/>
+              </svg>
+              <span>How to Play</span>
+            </button>
+
+            <button
+              type="button"
+              class="btn-wood-plaque"
+              data-action="open-difficulty-modal"
+              data-testid="difficulty-details-button"
+            >
+              <span>Level Guide</span>
+            </button>
+          </div>
+
+          <div style="width: 140px;" aria-hidden="true"></div>
+        </footer>
       </main>
     `;
   }
@@ -2230,6 +2319,8 @@ class SpellingBeeHiveApp {
 
     return `
       <main class="gameplay-viewport" data-testid="gameplay-screen">
+        ${renderGardenBackdropSvg()}
+
         <!-- Top Carved Wood & Honeycomb HUD -->
         <section class="gameplay-hud" aria-label="Word Progress and Controls">
           <div class="hud-session-info">
