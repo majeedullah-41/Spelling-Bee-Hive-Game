@@ -2362,9 +2362,7 @@ class SpellingBeeHiveApp {
                     ${
                       slot.letter
                         ? `<span>${slot.letter}</span>`
-                        : slot.watermark
-                        ? `<span class="slot-watermark" data-testid="slot-watermark">${slot.watermark}</span>`
-                        : `<span aria-hidden="true">_</span>`
+                        : `<span aria-hidden="true"></span>`
                     }
                   </div>
                 `
