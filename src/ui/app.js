@@ -501,7 +501,7 @@ export class SpellingBeeHiveApp {
             </button>
           </div>
 
-          <div style="width: 140px;" aria-hidden="true"></div>
+          <div class="welcome-bottom-spacer" aria-hidden="true"></div>
         </footer>
       </main>
     `;
@@ -1171,11 +1171,11 @@ export class SpellingBeeHiveApp {
             this.render();
             break;
           case 'move-left':
-            this.state = moveBeeByDelta(this.state, -8);
+            this.state = moveBeeByDelta(this.state, -6);
             this.syncPlayfieldPositions();
             break;
           case 'move-right':
-            this.state = moveBeeByDelta(this.state, 8);
+            this.state = moveBeeByDelta(this.state, 6);
             this.syncPlayfieldPositions();
             break;
           default:
@@ -1184,10 +1184,37 @@ export class SpellingBeeHiveApp {
       });
     });
 
+    // Continuous press-and-hold support for mobile & tablet Fly Left / Fly Right buttons
+    const bindHoldMoveButton = (selector, dirKey, stepDelta) => {
+      const btn = this.root.querySelector(selector);
+      if (!btn) return;
+
+      const startHold = (e) => {
+        if (e.cancelable) e.preventDefault();
+        this.keysHeld[dirKey] = true;
+        this.state = moveBeeByDelta(this.state, stepDelta);
+        this.syncPlayfieldPositions();
+      };
+      const stopHold = () => {
+        this.keysHeld[dirKey] = false;
+      };
+
+      btn.addEventListener('pointerdown', startHold);
+      btn.addEventListener('pointerup', stopHold);
+      btn.addEventListener('pointerleave', stopHold);
+      btn.addEventListener('pointercancel', stopHold);
+      btn.addEventListener('touchstart', startHold, { passive: false });
+      btn.addEventListener('touchend', stopHold);
+      btn.addEventListener('touchcancel', stopHold);
+    };
+
+    bindHoldMoveButton('[data-action="move-left"]', 'left', -4.5);
+    bindHoldMoveButton('[data-action="move-right"]', 'right', 4.5);
+
     const playfield = this.root.querySelector('[data-playfield]');
     if (playfield) {
       let dragging = false;
-      const updateFromPointer = (clientX) => {
+      const updateFromClientX = (clientX) => {
         if (this.state.screen !== 'playing') return;
         const rect = playfield.getBoundingClientRect();
         if (rect.width <= 0) return;
@@ -1198,19 +1225,44 @@ export class SpellingBeeHiveApp {
 
       playfield.addEventListener('pointerdown', (e) => {
         dragging = true;
-        updateFromPointer(e.clientX);
+        updateFromClientX(e.clientX);
       });
       playfield.addEventListener('pointermove', (e) => {
         if (!dragging) return;
-        updateFromPointer(e.clientX);
+        updateFromClientX(e.clientX);
       });
-      window.addEventListener(
-        'pointerup',
-        () => {
-          dragging = false;
+      playfield.addEventListener('pointerup', () => {
+        dragging = false;
+      });
+      playfield.addEventListener('pointercancel', () => {
+        dragging = false;
+      });
+
+      // Explicit touch fallback for mobile browsers
+      playfield.addEventListener(
+        'touchstart',
+        (e) => {
+          if (e.touches && e.touches.length > 0) {
+            if (e.cancelable) e.preventDefault();
+            dragging = true;
+            updateFromClientX(e.touches[0].clientX);
+          }
         },
-        { once: true }
+        { passive: false }
       );
+      playfield.addEventListener(
+        'touchmove',
+        (e) => {
+          if (dragging && e.touches && e.touches.length > 0) {
+            if (e.cancelable) e.preventDefault();
+            updateFromClientX(e.touches[0].clientX);
+          }
+        },
+        { passive: false }
+      );
+      playfield.addEventListener('touchend', () => {
+        dragging = false;
+      });
     }
   }
 }
